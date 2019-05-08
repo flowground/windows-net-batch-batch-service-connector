@@ -1,0 +1,87 @@
+{
+    "type": "object",
+    "properties": {
+        "jobId": {
+            "required": true,
+            "type": "string"
+        },
+        "taskId": {
+            "required": true,
+            "type": "string"
+        },
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "constraints": {
+                    "description": "If omitted, the task is given the default constraints. For multi-instance tasks, updating the retention time applies only to the primary task and not subtasks.",
+                    "title": "Constraints that apply to this task.",
+                    "properties": {
+                        "maxTaskRetryCount": {
+                            "description": "Note that this value specifically controls the number of retries for the task executable due to a nonzero exit code. The Batch service will try the task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries the task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry the task after the first attempt. If the maximum retry count is -1, the Batch service retries the task without limit. Resource files and application packages are only downloaded again if the task is retried on a new compute node.",
+                            "format": "int32",
+                            "title": "The maximum number of times the task may be retried. The Batch service retries a task if its exit code is nonzero.",
+                            "type": "integer"
+                        },
+                        "maxWallClockTime": {
+                            "description": "If this is not specified, there is no time limit on how long the task may run.",
+                            "format": "duration",
+                            "title": "The maximum elapsed time that the task may run, measured from the time the task starts. If the task does not complete within the time limit, the Batch service terminates it.",
+                            "type": "string"
+                        },
+                        "retentionTime": {
+                            "description": "The default is infinite, i.e. the task directory will be retained until the compute node is removed or reimaged.",
+                            "format": "duration",
+                            "title": "The minimum time to retain the task directory on the compute node where it ran, from the time it completes execution. After this time, the Batch service may delete the task directory and all its contents.",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "title": "The set of changes to be made to a task.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_None_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_Modified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Unmodified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

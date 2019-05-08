@@ -1,0 +1,88 @@
+{
+    "type": "object",
+    "properties": {
+        "jobId": {
+            "required": true,
+            "type": "string"
+        },
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "disableTasks": {
+                    "enum": [
+                        "requeue",
+                        "terminate",
+                        "wait"
+                    ],
+                    "title": "What to do with active tasks associated with the job.",
+                    "type": "string",
+                    "x-ms-enum": {
+                        "modelAsString": false,
+                        "name": "DisableJobOption",
+                        "values": [
+                            {
+                                "description": "Terminate running tasks and requeue them. The tasks will run again when the job is enabled.",
+                                "value": "requeue"
+                            },
+                            {
+                                "description": "Terminate running tasks. The tasks will be completed with failureInfo indicating that they were terminated, and will not run again.",
+                                "value": "terminate"
+                            },
+                            {
+                                "description": "Allow currently running tasks to complete.",
+                                "value": "wait"
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "disableTasks"
+            ],
+            "title": "Options when disabling a job.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_None_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_Modified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Unmodified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

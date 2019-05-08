@@ -1,0 +1,110 @@
+{
+    "type": "object",
+    "properties": {
+        "poolId": {
+            "required": true,
+            "type": "string"
+        },
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "nodeDeallocationOption": {
+                    "description": "The default value is requeue.",
+                    "title": "Determines what to do with a node and its running task(s) after it has been selected for deallocation.",
+                    "enum": [
+                        "requeue",
+                        "terminate",
+                        "taskcompletion",
+                        "retaineddata"
+                    ],
+                    "type": "string",
+                    "x-ms-enum": {
+                        "modelAsString": false,
+                        "name": "ComputeNodeDeallocationOption",
+                        "values": [
+                            {
+                                "description": "Terminate running task processes and requeue the tasks. The tasks will run again when a node is available. Remove nodes as soon as tasks have been terminated.",
+                                "value": "requeue"
+                            },
+                            {
+                                "description": "Terminate running tasks. The tasks will be completed with failureInfo indicating that they were terminated, and will not run again. Remove nodes as soon as tasks have been terminated.",
+                                "value": "terminate"
+                            },
+                            {
+                                "description": "Allow currently running tasks to complete. Schedule no new tasks while waiting. Remove nodes when all tasks have completed.",
+                                "name": "taskCompletion",
+                                "value": "taskcompletion"
+                            },
+                            {
+                                "description": "Allow currently running tasks to complete, then wait for all task data retention periods to expire. Schedule no new tasks while waiting. Remove nodes when all task retention periods have expired.",
+                                "name": "retainedData",
+                                "value": "retaineddata"
+                            }
+                        ]
+                    }
+                },
+                "nodeList": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "maxItems": 100,
+                    "title": "A list containing the IDs of the compute nodes to be removed from the specified pool.",
+                    "type": "array"
+                },
+                "resizeTimeout": {
+                    "description": "The default value is 15 minutes. The minimum value is 5 minutes. If you specify a value less than 5 minutes, the Batch service returns an error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                    "format": "duration",
+                    "title": "The timeout for removal of compute nodes to the pool.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "nodeList"
+            ],
+            "title": "Options for removing compute nodes from a pool.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_None_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_Modified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Unmodified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "type": "object",
+    "properties": {
+        "poolId": {
+            "required": true,
+            "type": "string"
+        },
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "targetOSVersion": {
+                    "title": "The Azure Guest OS version to be installed on the virtual machines in the pool.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "targetOSVersion"
+            ],
+            "title": "Options for upgrading the operating system of compute nodes in a pool.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_None_Match": {
+            "required": false,
+            "type": "string"
+        },
+        "If_Modified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "If_Unmodified_Since": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

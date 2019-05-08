@@ -1,0 +1,80 @@
+{
+    "type": "object",
+    "properties": {
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "certificateFormat": {
+                    "enum": [
+                        "pfx",
+                        "cer"
+                    ],
+                    "title": "The format of the certificate data.",
+                    "type": "string",
+                    "x-ms-enum": {
+                        "modelAsString": false,
+                        "name": "CertificateFormat",
+                        "values": [
+                            {
+                                "description": "The certificate is a PFX (PKCS#12) formatted certificate or certificate chain.",
+                                "value": "pfx"
+                            },
+                            {
+                                "description": "The certificate is a base64-encoded X.509 certificate.",
+                                "value": "cer"
+                            }
+                        ]
+                    }
+                },
+                "data": {
+                    "title": "The base64-encoded contents of the certificate. The maximum size is 10KB.",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "This is required if the certificate format is pfx. It should be omitted if the certificate format is cer.",
+                    "title": "The password to access the certificate's private key.",
+                    "type": "string"
+                },
+                "thumbprint": {
+                    "title": "The X.509 thumbprint of the certificate. This is a sequence of up to 40 hex digits (it may include spaces but these are removed).",
+                    "type": "string"
+                },
+                "thumbprintAlgorithm": {
+                    "title": "The algorithm used to derive the thumbprint. This must be sha1.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "thumbprint",
+                "thumbprintAlgorithm",
+                "data"
+            ],
+            "title": "A certificate that can be installed on compute nodes and can be used to authenticate operations on the machine.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

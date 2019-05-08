@@ -1,0 +1,1976 @@
+{
+    "type": "object",
+    "properties": {
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "displayName": {
+                    "description": "The display name need not be unique and can contain any Unicode characters up to a maximum length of 1024.",
+                    "title": "The display name for the schedule.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The ID can contain any combination of alphanumeric characters including hyphens and underscores, and cannot contain more than 64 characters. The ID is case-preserving and case-insensitive (that is, you may not have two IDs within an account that differ only by case).",
+                    "title": "A string that uniquely identifies the schedule within the account.",
+                    "type": "string"
+                },
+                "jobSpecification": {
+                    "title": "The details of the jobs to be created on this schedule.",
+                    "properties": {
+                        "commonEnvironmentSettings": {
+                            "description": "Individual tasks can override an environment setting specified here by specifying the same setting name with a different value.",
+                            "items": {
+                                "properties": {
+                                    "name": {
+                                        "title": "The name of the environment variable.",
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "title": "The value of the environment variable.",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ],
+                                "title": "An environment variable to be set on a task process.",
+                                "type": "object"
+                            },
+                            "title": "A list of common environment variable settings. These environment variables are set for all tasks in jobs created under this schedule (including the Job Manager, Job Preparation and Job Release tasks).",
+                            "type": "array"
+                        },
+                        "constraints": {
+                            "title": "The execution constraints for jobs created under this schedule.",
+                            "properties": {
+                                "maxTaskRetryCount": {
+                                    "description": "Note that this value specifically controls the number of retries. The Batch service will try each task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries a task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry tasks. If the maximum retry count is -1, the Batch service retries tasks without limit. The default value is 0 (no retries).",
+                                    "format": "int32",
+                                    "title": "The maximum number of times each task may be retried. The Batch service retries a task if its exit code is nonzero.",
+                                    "type": "integer"
+                                },
+                                "maxWallClockTime": {
+                                    "description": "If the job does not complete within the time limit, the Batch service terminates it and any tasks that are still running. In this case, the termination reason will be MaxWallClockTimeExpiry. If this property is not specified, there is no time limit on how long the job may run.",
+                                    "format": "duration",
+                                    "title": "The maximum elapsed time that the job may run, measured from the time the job is created.",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "displayName": {
+                            "description": "The name need not be unique and can contain any Unicode characters up to a maximum length of 1024.",
+                            "title": "The display name for jobs created under this schedule.",
+                            "type": "string"
+                        },
+                        "jobManagerTask": {
+                            "description": "If the job does not specify a Job Manager task, the user must explicitly add tasks to the job using the Task API. If the job does specify a Job Manager task, the Batch service creates the Job Manager task when the job is created, and will try to schedule the Job Manager task before scheduling other tasks in the job.",
+                            "title": "The details of a Job Manager task to be launched when a job is started under this schedule.",
+                            "properties": {
+                                "allowLowPriorityNode": {
+                                    "description": "The default value is true.",
+                                    "title": "Whether the Job Manager task may run on a low-priority compute node.",
+                                    "type": "boolean"
+                                },
+                                "applicationPackageReferences": {
+                                    "description": "Application packages are downloaded and deployed to a shared directory, not the task working directory. Therefore, if a referenced package is already on the compute node, and is up to date, then it is not re-downloaded; the existing copy on the compute node is used. If a referenced application package cannot be installed, for example because the package has been deleted or because download failed, the task fails.",
+                                    "items": {
+                                        "properties": {
+                                            "applicationId": {
+                                                "title": "The ID of the application to deploy.",
+                                                "type": "string"
+                                            },
+                                            "version": {
+                                                "description": "If this is omitted on a pool, and no default version is specified for this application, the request fails with the error code InvalidApplicationPackageReferences and HTTP status code 409. If this is omitted on a task, and no default version is specified for this application, the task fails with a pre-processing error.",
+                                                "title": "The version of the application to deploy. If omitted, the default version is deployed.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "applicationId"
+                                        ],
+                                        "title": "A reference to an application package to be deployed to compute nodes.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of application packages that the Batch service will deploy to the compute node before running the command line.",
+                                    "type": "array"
+                                },
+                                "authenticationTokenSettings": {
+                                    "description": "If this property is set, the Batch service provides the task with an authentication token which can be used to authenticate Batch service operations without requiring an account access key. The token is provided via the AZ_BATCH_AUTHENTICATION_TOKEN environment variable. The operations that the task can carry out using the token depend on the settings. For example, a task can request job permissions in order to add other tasks to the job, or check the status of the job or of other tasks under the job.",
+                                    "title": "The settings for an authentication token that the task can use to perform Batch service operations.",
+                                    "properties": {
+                                        "access": {
+                                            "description": "The authentication token grants access to a limited set of Batch service operations. Currently the only supported value for the access property is 'job', which grants access to all operations related to the job which contains the task.",
+                                            "items": {
+                                                "enum": [
+                                                    "job"
+                                                ],
+                                                "type": "string",
+                                                "x-ms-enum": {
+                                                    "modelAsString": false,
+                                                    "name": "AccessScope",
+                                                    "values": [
+                                                        {
+                                                            "description": "Grants access to perform all operations on the job containing the task.",
+                                                            "value": "job"
+                                                        }
+                                                    ]
+                                                },
+                                                "nullable": false
+                                            },
+                                            "title": "The Batch resources to which the token grants access.",
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "commandLine": {
+                                    "description": "The command line does not run under a shell, and therefore cannot take advantage of shell features such as environment variable expansion. If you want to take advantage of such features, you should invoke the shell in the command line, for example using \"cmd /c MyCommand\" in Windows or \"/bin/sh -c MyCommand\" in Linux. If the command line refers to file paths, it should use a relative path (relative to the task working directory), or use the Batch provided environment variable (https://docs.microsoft.com/en-us/azure/batch/batch-compute-node-environment-variables).",
+                                    "title": "The command line of the Job Manager task.",
+                                    "type": "string"
+                                },
+                                "constraints": {
+                                    "title": "Constraints that apply to the Job Manager task.",
+                                    "properties": {
+                                        "maxTaskRetryCount": {
+                                            "description": "Note that this value specifically controls the number of retries for the task executable due to a nonzero exit code. The Batch service will try the task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries the task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry the task after the first attempt. If the maximum retry count is -1, the Batch service retries the task without limit. Resource files and application packages are only downloaded again if the task is retried on a new compute node.",
+                                            "format": "int32",
+                                            "title": "The maximum number of times the task may be retried. The Batch service retries a task if its exit code is nonzero.",
+                                            "type": "integer"
+                                        },
+                                        "maxWallClockTime": {
+                                            "description": "If this is not specified, there is no time limit on how long the task may run.",
+                                            "format": "duration",
+                                            "title": "The maximum elapsed time that the task may run, measured from the time the task starts. If the task does not complete within the time limit, the Batch service terminates it.",
+                                            "type": "string"
+                                        },
+                                        "retentionTime": {
+                                            "description": "The default is infinite, i.e. the task directory will be retained until the compute node is removed or reimaged.",
+                                            "format": "duration",
+                                            "title": "The minimum time to retain the task directory on the compute node where it ran, from the time it completes execution. After this time, the Batch service may delete the task directory and all its contents.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "containerSettings": {
+                                    "description": "If the pool that will run this task has containerConfiguration set, this must be set as well. If the pool that will run this task doesn't have containerConfiguration set, this must not be set. When this is specified, all directories recursively below the AZ_BATCH_NODE_ROOT_DIR (the root of Azure Batch directories on the node) are mapped into the container, all task environment variables are mapped into the container, and the task command line is executed in the container.",
+                                    "title": "The settings for the container under which the Job Manager task runs.",
+                                    "properties": {
+                                        "containerRunOptions": {
+                                            "description": "These additional options are supplied as arguments to the \"docker create\" command, in addition to those controlled by the Batch Service.",
+                                            "title": "Additional options to the container create command.",
+                                            "type": "string"
+                                        },
+                                        "imageName": {
+                                            "description": "This is the full image reference, as would be specified to \"docker pull\". If no tag is provided as part of the image name, the tag \":latest\" is used as a default.",
+                                            "title": "The image to use to create the container in which the task will run.",
+                                            "type": "string"
+                                        },
+                                        "registry": {
+                                            "description": "This setting can be omitted if was already provided at pool creation.",
+                                            "title": "The private registry which contains the container image.",
+                                            "properties": {
+                                                "password": {
+                                                    "title": "The password to log into the registry server.",
+                                                    "type": "string"
+                                                },
+                                                "registryServer": {
+                                                    "description": "If omitted, the default is \"docker.io\".",
+                                                    "title": "The registry URL.",
+                                                    "type": "string"
+                                                },
+                                                "username": {
+                                                    "title": "The user name to log into the registry server.",
+                                                    "type": "string",
+                                                    "x-ms-client-name": "userName"
+                                                }
+                                            },
+                                            "required": [
+                                                "username",
+                                                "password"
+                                            ],
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "imageName"
+                                    ],
+                                    "type": "object"
+                                },
+                                "displayName": {
+                                    "description": "It need not be unique and can contain any Unicode characters up to a maximum length of 1024.",
+                                    "title": "The display name of the Job Manager task.",
+                                    "type": "string"
+                                },
+                                "environmentSettings": {
+                                    "items": {
+                                        "properties": {
+                                            "name": {
+                                                "title": "The name of the environment variable.",
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "title": "The value of the environment variable.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "name"
+                                        ],
+                                        "title": "An environment variable to be set on a task process.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of environment variable settings for the Job Manager task.",
+                                    "type": "array"
+                                },
+                                "id": {
+                                    "description": "The ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters.",
+                                    "title": "A string that uniquely identifies the Job Manager task within the job.",
+                                    "type": "string"
+                                },
+                                "killJobOnCompletion": {
+                                    "description": "If true, when the Job Manager task completes, the Batch service marks the job as complete. If any tasks are still running at this time (other than Job Release), those tasks are terminated. If false, the completion of the Job Manager task does not affect the job status. In this case, you should either use the onAllTasksComplete attribute to terminate the job, or have a client or user terminate the job explicitly. An example of this is if the Job Manager creates a set of tasks but then takes no further role in their execution. The default value is true. If you are using the onAllTasksComplete and onTaskFailure attributes to control job lifetime, and using the Job Manager task only to create the tasks for the job (not to monitor progress), then it is important to set killJobOnCompletion to false.",
+                                    "title": "Whether completion of the Job Manager task signifies completion of the entire job.",
+                                    "type": "boolean"
+                                },
+                                "outputFiles": {
+                                    "description": "For multi-instance tasks, the files will only be uploaded from the compute node on which the primary task is executed.",
+                                    "items": {
+                                        "properties": {
+                                            "destination": {
+                                                "title": "The destination for the output file(s).",
+                                                "properties": {
+                                                    "container": {
+                                                        "title": "A location in Azure blob storage to which files are uploaded.",
+                                                        "properties": {
+                                                            "containerUrl": {
+                                                                "description": "The URL must include a Shared Access Signature (SAS) granting write permissions to the container.",
+                                                                "title": "The URL of the container within Azure Blob Storage to which to upload the file(s).",
+                                                                "type": "string"
+                                                            },
+                                                            "path": {
+                                                                "description": "If filePattern refers to a specific file (i.e. contains no wildcards), then path is the name of the blob to which to upload that file. If filePattern contains one or more wildcards (and therefore may match multiple files), then path is the name of the blob virtual directory (which is prepended to each blob name) to which to upload the file(s). If omitted, file(s) are uploaded to the root of the container with a blob name matching their file name.",
+                                                                "title": "The destination blob or virtual directory within the Azure Storage container.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "containerUrl"
+                                                        ],
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "filePattern": {
+                                                "description": "Both relative and absolute paths are supported. Relative paths are relative to the task working directory. The following wildcards are supported: * matches 0 or more characters (for example pattern abc* would match abc or abcdef), ** matches any directory, ? matches any single character, [abc] matches one character in the brackets, and [a-c] matches one character in the range. Brackets can include a negation to match any character not specified (for example [!abc] matches any character but a, b, or c). If a file name starts with \".\" it is ignored by default but may be matched by specifying it explicitly (for example *.gif will not match .a.gif, but .*.gif will). A simple example: **\\*.txt matches any file that does not start in '.' and ends with .txt in the task working directory or any subdirectory. If the filename contains a wildcard character it can be escaped using brackets (for example abc[*] would match a file named abc*). Note that both \\ and / are treated as directory separators on Windows, but only / is on Linux. Environment variables (%var% on Windows or $var on Linux) are expanded prior to the pattern being applied.",
+                                                "title": "A pattern indicating which file(s) to upload.",
+                                                "type": "string"
+                                            },
+                                            "uploadOptions": {
+                                                "title": "Additional options for the upload operation, including under what conditions to perform the upload.",
+                                                "properties": {
+                                                    "uploadCondition": {
+                                                        "description": "The default is taskcompletion.",
+                                                        "title": "The conditions under which the task output file or set of files should be uploaded.",
+                                                        "enum": [
+                                                            "tasksuccess",
+                                                            "taskfailure",
+                                                            "taskcompletion"
+                                                        ],
+                                                        "type": "string",
+                                                        "x-ms-enum": {
+                                                            "modelAsString": false,
+                                                            "name": "OutputFileUploadCondition",
+                                                            "values": [
+                                                                {
+                                                                    "description": "Upload the file(s) only after the task process exits with an exit code of 0.",
+                                                                    "name": "taskSuccess",
+                                                                    "value": "tasksuccess"
+                                                                },
+                                                                {
+                                                                    "description": "Upload the file(s) only after the task process exits with a nonzero exit code.",
+                                                                    "name": "taskFailure",
+                                                                    "value": "taskfailure"
+                                                                },
+                                                                {
+                                                                    "description": "Upload the file(s) after the task process exits, no matter what the exit code was.",
+                                                                    "name": "taskCompletion",
+                                                                    "value": "taskcompletion"
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "required": [
+                                                    "uploadCondition"
+                                                ],
+                                                "type": "object"
+                                            }
+                                        },
+                                        "required": [
+                                            "filePattern",
+                                            "destination",
+                                            "uploadOptions"
+                                        ],
+                                        "title": "A specification for uploading files from an Azure Batch node to another location after the Batch service has finished executing the task process.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of files that the Batch service will upload from the compute node after running the command line.",
+                                    "type": "array"
+                                },
+                                "resourceFiles": {
+                                    "description": "Files listed under this element are located in the task's working directory. There is a maximum size for the list of resource files.  When the max size is exceeded, the request will fail and the response error code will be RequestEntityTooLarge. If this occurs, the collection of ResourceFiles must be reduced in size. This can be achieved using .zip files, Application Packages, or Docker Containers.",
+                                    "items": {
+                                        "properties": {
+                                            "blobSource": {
+                                                "description": "This URL must be readable using anonymous access; that is, the Batch service does not present any credentials when downloading the blob. There are two ways to get such a URL for a blob in Azure storage: include a Shared Access Signature (SAS) granting read permissions on the blob, or set the ACL for the blob or its container to allow public access.",
+                                                "title": "The URL of the file within Azure Blob Storage.",
+                                                "type": "string"
+                                            },
+                                            "fileMode": {
+                                                "description": "This property applies only to files being downloaded to Linux compute nodes. It will be ignored if it is specified for a resourceFile which will be downloaded to a Windows node. If this property is not specified for a Linux node, then a default value of 0770 is applied to the file.",
+                                                "title": "The file permission mode attribute in octal format.",
+                                                "type": "string"
+                                            },
+                                            "filePath": {
+                                                "title": "The location on the compute node to which to download the file, relative to the task's working directory.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "blobSource",
+                                            "filePath"
+                                        ],
+                                        "title": "A file to be downloaded from Azure blob storage to a compute node.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of files that the Batch service will download to the compute node before running the command line.",
+                                    "type": "array"
+                                },
+                                "runExclusive": {
+                                    "description": "If true, no other tasks will run on the same compute node for as long as the Job Manager is running. If false, other tasks can run simultaneously with the Job Manager on a compute node. The Job Manager task counts normally against the node's concurrent task limit, so this is only relevant if the node allows multiple concurrent tasks. The default value is true.",
+                                    "title": "Whether the Job Manager task requires exclusive use of the compute node where it runs.",
+                                    "type": "boolean"
+                                },
+                                "userIdentity": {
+                                    "description": "If omitted, the task runs as a non-administrative user unique to the task.",
+                                    "title": "The user identity under which the Job Manager task runs.",
+                                    "properties": {
+                                        "autoUser": {
+                                            "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                            "title": "The auto user under which the task is run.",
+                                            "properties": {
+                                                "elevationLevel": {
+                                                    "description": "The default value is nonAdmin.",
+                                                    "title": "The elevation level of the auto user.",
+                                                    "enum": [
+                                                        "nonadmin",
+                                                        "admin"
+                                                    ],
+                                                    "type": "string",
+                                                    "x-ms-enum": {
+                                                        "modelAsString": false,
+                                                        "name": "ElevationLevel",
+                                                        "values": [
+                                                            {
+                                                                "description": "The user is a standard user without elevated access.",
+                                                                "name": "nonAdmin",
+                                                                "value": "nonadmin"
+                                                            },
+                                                            {
+                                                                "description": "The user is a user with elevated access and operates with full Administrator permissions.",
+                                                                "value": "admin"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "scope": {
+                                                    "description": "The default value is task.",
+                                                    "enum": [
+                                                        "task",
+                                                        "pool"
+                                                    ],
+                                                    "title": "The scope for the auto user",
+                                                    "type": "string",
+                                                    "x-ms-enum": {
+                                                        "modelAsString": false,
+                                                        "name": "AutoUserScope",
+                                                        "values": [
+                                                            {
+                                                                "description": "Specifies that the service should create a new user for the task.",
+                                                                "value": "task"
+                                                            },
+                                                            {
+                                                                "description": "Specifies that the task runs as the common auto user account which is created on every node in a pool.",
+                                                                "value": "pool"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "username": {
+                                            "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                            "title": "The name of the user identity under which the task is run.",
+                                            "type": "string",
+                                            "x-ms-client-name": "userName"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "commandLine"
+                            ],
+                            "type": "object"
+                        },
+                        "jobPreparationTask": {
+                            "description": "If a job has a Job Preparation task, the Batch service will run the Job Preparation task on a compute node before starting any tasks of that job on that compute node.",
+                            "title": "The Job Preparation task for jobs created under this schedule.",
+                            "properties": {
+                                "commandLine": {
+                                    "description": "The command line does not run under a shell, and therefore cannot take advantage of shell features such as environment variable expansion. If you want to take advantage of such features, you should invoke the shell in the command line, for example using \"cmd /c MyCommand\" in Windows or \"/bin/sh -c MyCommand\" in Linux. If the command line refers to file paths, it should use a relative path (relative to the task working directory), or use the Batch provided environment variable (https://docs.microsoft.com/en-us/azure/batch/batch-compute-node-environment-variables).",
+                                    "title": "The command line of the Job Preparation task.",
+                                    "type": "string"
+                                },
+                                "constraints": {
+                                    "title": "Constraints that apply to the Job Preparation task.",
+                                    "properties": {
+                                        "maxTaskRetryCount": {
+                                            "description": "Note that this value specifically controls the number of retries for the task executable due to a nonzero exit code. The Batch service will try the task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries the task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry the task after the first attempt. If the maximum retry count is -1, the Batch service retries the task without limit. Resource files and application packages are only downloaded again if the task is retried on a new compute node.",
+                                            "format": "int32",
+                                            "title": "The maximum number of times the task may be retried. The Batch service retries a task if its exit code is nonzero.",
+                                            "type": "integer"
+                                        },
+                                        "maxWallClockTime": {
+                                            "description": "If this is not specified, there is no time limit on how long the task may run.",
+                                            "format": "duration",
+                                            "title": "The maximum elapsed time that the task may run, measured from the time the task starts. If the task does not complete within the time limit, the Batch service terminates it.",
+                                            "type": "string"
+                                        },
+                                        "retentionTime": {
+                                            "description": "The default is infinite, i.e. the task directory will be retained until the compute node is removed or reimaged.",
+                                            "format": "duration",
+                                            "title": "The minimum time to retain the task directory on the compute node where it ran, from the time it completes execution. After this time, the Batch service may delete the task directory and all its contents.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "containerSettings": {
+                                    "description": "When this is specified, all directories recursively below the AZ_BATCH_NODE_ROOT_DIR (the root of Azure Batch directories on the node) are mapped into the container, all task environment variables are mapped into the container, and the task command line is executed in the container.",
+                                    "title": "The settings for the container under which the Job Preparation task runs.",
+                                    "properties": {
+                                        "containerRunOptions": {
+                                            "description": "These additional options are supplied as arguments to the \"docker create\" command, in addition to those controlled by the Batch Service.",
+                                            "title": "Additional options to the container create command.",
+                                            "type": "string"
+                                        },
+                                        "imageName": {
+                                            "description": "This is the full image reference, as would be specified to \"docker pull\". If no tag is provided as part of the image name, the tag \":latest\" is used as a default.",
+                                            "title": "The image to use to create the container in which the task will run.",
+                                            "type": "string"
+                                        },
+                                        "registry": {
+                                            "description": "This setting can be omitted if was already provided at pool creation.",
+                                            "title": "The private registry which contains the container image.",
+                                            "properties": {
+                                                "password": {
+                                                    "title": "The password to log into the registry server.",
+                                                    "type": "string"
+                                                },
+                                                "registryServer": {
+                                                    "description": "If omitted, the default is \"docker.io\".",
+                                                    "title": "The registry URL.",
+                                                    "type": "string"
+                                                },
+                                                "username": {
+                                                    "title": "The user name to log into the registry server.",
+                                                    "type": "string",
+                                                    "x-ms-client-name": "userName"
+                                                }
+                                            },
+                                            "required": [
+                                                "username",
+                                                "password"
+                                            ],
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "imageName"
+                                    ],
+                                    "type": "object"
+                                },
+                                "environmentSettings": {
+                                    "items": {
+                                        "properties": {
+                                            "name": {
+                                                "title": "The name of the environment variable.",
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "title": "The value of the environment variable.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "name"
+                                        ],
+                                        "title": "An environment variable to be set on a task process.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of environment variable settings for the Job Preparation task.",
+                                    "type": "array"
+                                },
+                                "id": {
+                                    "description": "The ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobpreparation'. No other task in the job can have the same ID as the Job Preparation task. If you try to submit a task with the same id, the Batch service rejects the request with error code TaskIdSameAsJobPreparationTask; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).",
+                                    "title": "A string that uniquely identifies the Job Preparation task within the job.",
+                                    "type": "string"
+                                },
+                                "rerunOnNodeRebootAfterSuccess": {
+                                    "description": "The Job Preparation task is always rerun if a compute node is reimaged, or if the Job Preparation task did not complete (e.g. because the reboot occurred while the task was running). Therefore, you should always write a Job Preparation task to be idempotent and to behave correctly if run multiple times. The default value is true.",
+                                    "title": "Whether the Batch service should rerun the Job Preparation task after a compute node reboots.",
+                                    "type": "boolean"
+                                },
+                                "resourceFiles": {
+                                    "description": "Files listed under this element are located in the task's working directory.  There is a maximum size for the list of resource files.  When the max size is exceeded, the request will fail and the response error code will be RequestEntityTooLarge. If this occurs, the collection of ResourceFiles must be reduced in size. This can be achieved using .zip files, Application Packages, or Docker Containers.",
+                                    "items": {
+                                        "properties": {
+                                            "blobSource": {
+                                                "description": "This URL must be readable using anonymous access; that is, the Batch service does not present any credentials when downloading the blob. There are two ways to get such a URL for a blob in Azure storage: include a Shared Access Signature (SAS) granting read permissions on the blob, or set the ACL for the blob or its container to allow public access.",
+                                                "title": "The URL of the file within Azure Blob Storage.",
+                                                "type": "string"
+                                            },
+                                            "fileMode": {
+                                                "description": "This property applies only to files being downloaded to Linux compute nodes. It will be ignored if it is specified for a resourceFile which will be downloaded to a Windows node. If this property is not specified for a Linux node, then a default value of 0770 is applied to the file.",
+                                                "title": "The file permission mode attribute in octal format.",
+                                                "type": "string"
+                                            },
+                                            "filePath": {
+                                                "title": "The location on the compute node to which to download the file, relative to the task's working directory.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "blobSource",
+                                            "filePath"
+                                        ],
+                                        "title": "A file to be downloaded from Azure blob storage to a compute node.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of files that the Batch service will download to the compute node before running the command line.",
+                                    "type": "array"
+                                },
+                                "userIdentity": {
+                                    "description": "If omitted, the task runs as a non-administrative user unique to the task on Windows nodes, or a non-administrative user unique to the pool on Linux nodes.",
+                                    "title": "The user identity under which the Job Preparation task runs.",
+                                    "properties": {
+                                        "autoUser": {
+                                            "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                            "title": "The auto user under which the task is run.",
+                                            "properties": {
+                                                "elevationLevel": {
+                                                    "description": "The default value is nonAdmin.",
+                                                    "title": "The elevation level of the auto user.",
+                                                    "enum": [
+                                                        "nonadmin",
+                                                        "admin"
+                                                    ],
+                                                    "type": "string",
+                                                    "x-ms-enum": {
+                                                        "modelAsString": false,
+                                                        "name": "ElevationLevel",
+                                                        "values": [
+                                                            {
+                                                                "description": "The user is a standard user without elevated access.",
+                                                                "name": "nonAdmin",
+                                                                "value": "nonadmin"
+                                                            },
+                                                            {
+                                                                "description": "The user is a user with elevated access and operates with full Administrator permissions.",
+                                                                "value": "admin"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "scope": {
+                                                    "description": "The default value is task.",
+                                                    "enum": [
+                                                        "task",
+                                                        "pool"
+                                                    ],
+                                                    "title": "The scope for the auto user",
+                                                    "type": "string",
+                                                    "x-ms-enum": {
+                                                        "modelAsString": false,
+                                                        "name": "AutoUserScope",
+                                                        "values": [
+                                                            {
+                                                                "description": "Specifies that the service should create a new user for the task.",
+                                                                "value": "task"
+                                                            },
+                                                            {
+                                                                "description": "Specifies that the task runs as the common auto user account which is created on every node in a pool.",
+                                                                "value": "pool"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "username": {
+                                            "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                            "title": "The name of the user identity under which the task is run.",
+                                            "type": "string",
+                                            "x-ms-client-name": "userName"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "waitForSuccess": {
+                                    "description": "If true and the Job Preparation task fails on a compute node, the Batch service retries the Job Preparation task up to its maximum retry count (as specified in the constraints element). If the task has still not completed successfully after all retries, then the Batch service will not schedule tasks of the job to the compute node. The compute node remains active and eligible to run tasks of other jobs. If false, the Batch service will not wait for the Job Preparation task to complete. In this case, other tasks of the job can start executing on the compute node while the Job Preparation task is still running; and even if the Job Preparation task fails, new tasks will continue to be scheduled on the node. The default value is true.",
+                                    "title": "Whether the Batch service should wait for the Job Preparation task to complete successfully before scheduling any other tasks of the job on the compute node. A Job Preparation task has completed successfully if it exits with exit code 0.",
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": [
+                                "commandLine"
+                            ],
+                            "type": "object"
+                        },
+                        "jobReleaseTask": {
+                            "description": "The primary purpose of the Job Release task is to undo changes to compute nodes made by the Job Preparation task. Example activities include deleting local files, or shutting down services that were started as part of job preparation. A Job Release task cannot be specified without also specifying a Job Preparation task for the job. The Batch service runs the Job Release task on the compute nodes that have run the Job Preparation task.",
+                            "title": "The Job Release task for jobs created under this schedule.",
+                            "properties": {
+                                "commandLine": {
+                                    "description": "The command line does not run under a shell, and therefore cannot take advantage of shell features such as environment variable expansion. If you want to take advantage of such features, you should invoke the shell in the command line, for example using \"cmd /c MyCommand\" in Windows or \"/bin/sh -c MyCommand\" in Linux. If the command line refers to file paths, it should use a relative path (relative to the task working directory), or use the Batch provided environment variable (https://docs.microsoft.com/en-us/azure/batch/batch-compute-node-environment-variables).",
+                                    "title": "The command line of the Job Release task.",
+                                    "type": "string"
+                                },
+                                "containerSettings": {
+                                    "description": "When this is specified, all directories recursively below the AZ_BATCH_NODE_ROOT_DIR (the root of Azure Batch directories on the node) are mapped into the container, all task environment variables are mapped into the container, and the task command line is executed in the container.",
+                                    "title": "The settings for the container under which the Job Release task runs.",
+                                    "properties": {
+                                        "containerRunOptions": {
+                                            "description": "These additional options are supplied as arguments to the \"docker create\" command, in addition to those controlled by the Batch Service.",
+                                            "title": "Additional options to the container create command.",
+                                            "type": "string"
+                                        },
+                                        "imageName": {
+                                            "description": "This is the full image reference, as would be specified to \"docker pull\". If no tag is provided as part of the image name, the tag \":latest\" is used as a default.",
+                                            "title": "The image to use to create the container in which the task will run.",
+                                            "type": "string"
+                                        },
+                                        "registry": {
+                                            "description": "This setting can be omitted if was already provided at pool creation.",
+                                            "title": "The private registry which contains the container image.",
+                                            "properties": {
+                                                "password": {
+                                                    "title": "The password to log into the registry server.",
+                                                    "type": "string"
+                                                },
+                                                "registryServer": {
+                                                    "description": "If omitted, the default is \"docker.io\".",
+                                                    "title": "The registry URL.",
+                                                    "type": "string"
+                                                },
+                                                "username": {
+                                                    "title": "The user name to log into the registry server.",
+                                                    "type": "string",
+                                                    "x-ms-client-name": "userName"
+                                                }
+                                            },
+                                            "required": [
+                                                "username",
+                                                "password"
+                                            ],
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "imageName"
+                                    ],
+                                    "type": "object"
+                                },
+                                "environmentSettings": {
+                                    "items": {
+                                        "properties": {
+                                            "name": {
+                                                "title": "The name of the environment variable.",
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "title": "The value of the environment variable.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "name"
+                                        ],
+                                        "title": "An environment variable to be set on a task process.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of environment variable settings for the Job Release task.",
+                                    "type": "array"
+                                },
+                                "id": {
+                                    "description": "The ID can contain any combination of alphanumeric characters including hyphens and underscores and cannot contain more than 64 characters. If you do not specify this property, the Batch service assigns a default value of 'jobrelease'. No other task in the job can have the same ID as the Job Release task. If you try to submit a task with the same id, the Batch service rejects the request with error code TaskIdSameAsJobReleaseTask; if you are calling the REST API directly, the HTTP status code is 409 (Conflict).",
+                                    "title": "A string that uniquely identifies the Job Release task within the job.",
+                                    "type": "string"
+                                },
+                                "maxWallClockTime": {
+                                    "format": "duration",
+                                    "title": "The maximum elapsed time that the Job Release task may run on a given compute node, measured from the time the task starts. If the task does not complete within the time limit, the Batch service terminates it. The default value is 15 minutes. You may not specify a timeout longer than 15 minutes. If you do, the Batch service rejects it with an error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                                    "type": "string"
+                                },
+                                "resourceFiles": {
+                                    "description": "Files listed under this element are located in the task's working directory.",
+                                    "items": {
+                                        "properties": {
+                                            "blobSource": {
+                                                "description": "This URL must be readable using anonymous access; that is, the Batch service does not present any credentials when downloading the blob. There are two ways to get such a URL for a blob in Azure storage: include a Shared Access Signature (SAS) granting read permissions on the blob, or set the ACL for the blob or its container to allow public access.",
+                                                "title": "The URL of the file within Azure Blob Storage.",
+                                                "type": "string"
+                                            },
+                                            "fileMode": {
+                                                "description": "This property applies only to files being downloaded to Linux compute nodes. It will be ignored if it is specified for a resourceFile which will be downloaded to a Windows node. If this property is not specified for a Linux node, then a default value of 0770 is applied to the file.",
+                                                "title": "The file permission mode attribute in octal format.",
+                                                "type": "string"
+                                            },
+                                            "filePath": {
+                                                "title": "The location on the compute node to which to download the file, relative to the task's working directory.",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "blobSource",
+                                            "filePath"
+                                        ],
+                                        "title": "A file to be downloaded from Azure blob storage to a compute node.",
+                                        "type": "object"
+                                    },
+                                    "title": "A list of files that the Batch service will download to the compute node before running the command line.  There is a maximum size for the list of resource files.  When the max size is exceeded, the request will fail and the response error code will be RequestEntityTooLarge. If this occurs, the collection of ResourceFiles must be reduced in size. This can be achieved using .zip files, Application Packages, or Docker Containers.",
+                                    "type": "array"
+                                },
+                                "retentionTime": {
+                                    "description": "The default is infinite, i.e. the task directory will be retained until the compute node is removed or reimaged.",
+                                    "format": "duration",
+                                    "title": "The minimum time to retain the task directory for the Job Release task on the compute node. After this time, the Batch service may delete the task directory and all its contents.",
+                                    "type": "string"
+                                },
+                                "userIdentity": {
+                                    "description": "If omitted, the task runs as a non-administrative user unique to the task.",
+                                    "title": "The user identity under which the Job Release task runs.",
+                                    "properties": {
+                                        "autoUser": {
+                                            "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                            "title": "The auto user under which the task is run.",
+                                            "properties": {
+                                                "elevationLevel": {
+                                                    "description": "The default value is nonAdmin.",
+                                                    "title": "The elevation level of the auto user.",
+                                                    "enum": [
+                                                        "nonadmin",
+                                                        "admin"
+                                                    ],
+                                                    "type": "string",
+                                                    "x-ms-enum": {
+                                                        "modelAsString": false,
+                                                        "name": "ElevationLevel",
+                                                        "values": [
+                                                            {
+                                                                "description": "The user is a standard user without elevated access.",
+                                                                "name": "nonAdmin",
+                                                                "value": "nonadmin"
+                                                            },
+                                                            {
+                                                                "description": "The user is a user with elevated access and operates with full Administrator permissions.",
+                                                                "value": "admin"
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "scope": {
+                                                    "description": "The default value is task.",
+                                                    "enum": [
+                                                        "task",
+                                                        "pool"
+                                                    ],
+                                                    "title": "The scope for the auto user",
+                                                    "type": "string",
+                                                    "x-ms-enum": {
+                                                        "modelAsString": false,
+                                                        "name": "AutoUserScope",
+                                                        "values": [
+                                                            {
+                                                                "description": "Specifies that the service should create a new user for the task.",
+                                                                "value": "task"
+                                                            },
+                                                            {
+                                                                "description": "Specifies that the task runs as the common auto user account which is created on every node in a pool.",
+                                                                "value": "pool"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "username": {
+                                            "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                            "title": "The name of the user identity under which the task is run.",
+                                            "type": "string",
+                                            "x-ms-client-name": "userName"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "required": [
+                                "commandLine"
+                            ],
+                            "type": "object"
+                        },
+                        "metadata": {
+                            "description": "The Batch service does not assign any meaning to metadata; it is solely for the use of user code.",
+                            "items": {
+                                "description": "The Batch service does not assign any meaning to this metadata; it is solely for the use of user code.",
+                                "properties": {
+                                    "name": {
+                                        "title": "The name of the metadata item.",
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "title": "The value of the metadata item.",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "title": "A name-value pair associated with a Batch service resource.",
+                                "type": "object"
+                            },
+                            "title": "A list of name-value pairs associated with each job created under this schedule as metadata.",
+                            "type": "array"
+                        },
+                        "onAllTasksComplete": {
+                            "description": "Note that if a job contains no tasks, then all tasks are considered complete. This option is therefore most commonly used with a Job Manager task; if you want to use automatic job termination without a Job Manager, you should initially set onAllTasksComplete to noaction and update the job properties to set onAllTasksComplete to terminatejob once you have finished adding tasks. The default is noaction.",
+                            "title": "The action the Batch service should take when all tasks in a job created under this schedule are in the completed state.",
+                            "enum": [
+                                "noaction",
+                                "terminatejob"
+                            ],
+                            "type": "string",
+                            "x-ms-enum": {
+                                "modelAsString": false,
+                                "name": "OnAllTasksComplete",
+                                "values": [
+                                    {
+                                        "description": "Do nothing. The job remains active unless terminated or disabled by some other means.",
+                                        "name": "noAction",
+                                        "value": "noaction"
+                                    },
+                                    {
+                                        "description": "Terminate the job. The job's terminateReason is set to 'AllTasksComplete'.",
+                                        "name": "terminateJob",
+                                        "value": "terminatejob"
+                                    }
+                                ]
+                            }
+                        },
+                        "onTaskFailure": {
+                            "description": "The default is noaction.",
+                            "title": "The action the Batch service should take when any task fails in a job created under this schedule. A task is considered to have failed if it have failed if has a failureInfo. A failureInfo is set if the task completes with a non-zero exit code after exhausting its retry count, or if there was an error starting the task, for example due to a resource file download error.",
+                            "enum": [
+                                "noaction",
+                                "performexitoptionsjobaction"
+                            ],
+                            "type": "string",
+                            "x-ms-enum": {
+                                "modelAsString": false,
+                                "name": "OnTaskFailure",
+                                "values": [
+                                    {
+                                        "description": "Do nothing. The job remains active unless terminated or disabled by some other means.",
+                                        "name": "noAction",
+                                        "value": "noaction"
+                                    },
+                                    {
+                                        "description": "Take the action associated with the task exit condition in the task's exitConditions collection. (This may still result in no action being taken, if that is what the task specifies.)",
+                                        "name": "performExitOptionsJobAction",
+                                        "value": "performexitoptionsjobaction"
+                                    }
+                                ]
+                            }
+                        },
+                        "poolInfo": {
+                            "title": "The pool on which the Batch service runs the tasks of jobs created under this schedule.",
+                            "properties": {
+                                "autoPoolSpecification": {
+                                    "description": "If auto pool creation fails, the Batch service moves the job to a completed state, and the pool creation error is set in the job's scheduling error property. The Batch service manages the lifetime (both creation and, unless keepAlive is specified, deletion) of the auto pool. Any user actions that affect the lifetime of the auto pool while the job is active will result in unexpected behavior. You must specify either the pool ID or the auto pool specification, but not both.",
+                                    "title": "Characteristics for a temporary 'auto pool'. The Batch service will create this auto pool when the job is submitted.",
+                                    "properties": {
+                                        "autoPoolIdPrefix": {
+                                            "description": "The Batch service assigns each auto pool a unique identifier on creation. To distinguish between pools created for different purposes, you can specify this element to add a prefix to the ID that is assigned. The prefix can be up to 20 characters long.",
+                                            "title": "A prefix to be added to the unique identifier when a pool is automatically created.",
+                                            "type": "string"
+                                        },
+                                        "keepAlive": {
+                                            "description": "If false, the Batch service deletes the pool once its lifetime (as determined by the poolLifetimeOption setting) expires; that is, when the job or job schedule completes. If true, the Batch service does not delete the pool automatically. It is up to the user to delete auto pools created with this option.",
+                                            "title": "Whether to keep an auto pool alive after its lifetime expires.",
+                                            "type": "boolean"
+                                        },
+                                        "pool": {
+                                            "title": "The pool specification for the auto pool.",
+                                            "properties": {
+                                                "applicationLicenses": {
+                                                    "description": "The list of application licenses must be a subset of available Batch service application licenses. If a license is requested which is not supported, pool creation will fail. The permitted licenses available on the pool are 'maya', 'vray', '3dsmax', 'arnold'. An additional charge applies for each application license added to the pool.",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "title": "The list of application licenses the Batch service will make available on each compute node in the pool.",
+                                                    "type": "array"
+                                                },
+                                                "applicationPackageReferences": {
+                                                    "items": {
+                                                        "properties": {
+                                                            "applicationId": {
+                                                                "title": "The ID of the application to deploy.",
+                                                                "type": "string"
+                                                            },
+                                                            "version": {
+                                                                "description": "If this is omitted on a pool, and no default version is specified for this application, the request fails with the error code InvalidApplicationPackageReferences and HTTP status code 409. If this is omitted on a task, and no default version is specified for this application, the task fails with a pre-processing error.",
+                                                                "title": "The version of the application to deploy. If omitted, the default version is deployed.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "applicationId"
+                                                        ],
+                                                        "title": "A reference to an application package to be deployed to compute nodes.",
+                                                        "type": "object"
+                                                    },
+                                                    "title": "The list of application packages to be installed on each compute node in the pool.",
+                                                    "type": "array"
+                                                },
+                                                "autoScaleEvaluationInterval": {
+                                                    "description": "The default value is 15 minutes. The minimum and maximum value are 5 minutes and 168 hours respectively. If you specify a value less than 5 minutes or greater than 168 hours, the Batch service rejects the request with an invalid property value error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                                                    "format": "duration",
+                                                    "title": "The time interval at which to automatically adjust the pool size according to the autoscale formula.",
+                                                    "type": "string"
+                                                },
+                                                "autoScaleFormula": {
+                                                    "description": "This property must not be specified if enableAutoScale is set to false. It is required if enableAutoScale is set to true. The formula is checked for validity before the pool is created. If the formula is not valid, the Batch service rejects the request with detailed error information.",
+                                                    "title": "The formula for the desired number of compute nodes in the pool.",
+                                                    "type": "string"
+                                                },
+                                                "certificateReferences": {
+                                                    "description": "For Windows compute nodes, the Batch service installs the certificates to the specified certificate store and location. For Linux compute nodes, the certificates are stored in a directory inside the task working directory and an environment variable AZ_BATCH_CERTIFICATES_DIR is supplied to the task to query for this location. For certificates with visibility of 'remoteUser', a 'certs' directory is created in the user's home directory (e.g., /home/{user-name}/certs) and certificates are placed in that directory.",
+                                                    "items": {
+                                                        "properties": {
+                                                            "storeLocation": {
+                                                                "description": "The default value is currentuser. This property is applicable only for pools configured with Windows nodes (that is, created with cloudServiceConfiguration, or with virtualMachineConfiguration using a Windows image reference). For Linux compute nodes, the certificates are stored in a directory inside the task working directory and an environment variable AZ_BATCH_CERTIFICATES_DIR is supplied to the task to query for this location. For certificates with visibility of 'remoteUser', a 'certs' directory is created in the user's home directory (e.g., /home/{user-name}/certs) and certificates are placed in that directory.",
+                                                                "enum": [
+                                                                    "currentuser",
+                                                                    "localmachine"
+                                                                ],
+                                                                "title": "The location of the certificate store on the compute node into which to install the certificate.",
+                                                                "type": "string",
+                                                                "x-ms-enum": {
+                                                                    "modelAsString": false,
+                                                                    "name": "CertificateStoreLocation",
+                                                                    "values": [
+                                                                        {
+                                                                            "description": "Certificates should be installed to the CurrentUser certificate store.",
+                                                                            "name": "currentUser",
+                                                                            "value": "currentuser"
+                                                                        },
+                                                                        {
+                                                                            "description": "Certificates should be installed to the LocalMachine certificate store.",
+                                                                            "name": "localMachine",
+                                                                            "value": "localmachine"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "storeName": {
+                                                                "description": "This property is applicable only for pools configured with Windows nodes (that is, created with cloudServiceConfiguration, or with virtualMachineConfiguration using a Windows image reference). Common store names include: My, Root, CA, Trust, Disallowed, TrustedPeople, TrustedPublisher, AuthRoot, AddressBook, but any custom store name can also be used. The default value is My.",
+                                                                "title": "The name of the certificate store on the compute node into which to install the certificate.",
+                                                                "type": "string"
+                                                            },
+                                                            "thumbprint": {
+                                                                "title": "The thumbprint of the certificate.",
+                                                                "type": "string"
+                                                            },
+                                                            "thumbprintAlgorithm": {
+                                                                "title": "The algorithm with which the thumbprint is associated. This must be sha1.",
+                                                                "type": "string"
+                                                            },
+                                                            "visibility": {
+                                                                "description": "You can specify more than one visibility in this collection. The default is all accounts.",
+                                                                "items": {
+                                                                    "enum": [
+                                                                        "starttask",
+                                                                        "task",
+                                                                        "remoteuser"
+                                                                    ],
+                                                                    "type": "string",
+                                                                    "x-ms-enum": {
+                                                                        "modelAsString": false,
+                                                                        "name": "CertificateVisibility",
+                                                                        "values": [
+                                                                            {
+                                                                                "description": "The certificate should be visible to the user account under which the start task is run.",
+                                                                                "name": "startTask",
+                                                                                "value": "starttask"
+                                                                            },
+                                                                            {
+                                                                                "description": "The certificate should be visible to the user accounts under which job tasks are run.",
+                                                                                "value": "task"
+                                                                            },
+                                                                            {
+                                                                                "description": "The certificate should be visible to the user accounts under which users remotely access the node.",
+                                                                                "name": "remoteUser",
+                                                                                "value": "remoteuser"
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "nullable": false
+                                                                },
+                                                                "title": "Which user accounts on the compute node should have access to the private data of the certificate.",
+                                                                "type": "array"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "thumbprint",
+                                                            "thumbprintAlgorithm"
+                                                        ],
+                                                        "title": "A reference to a certificate to be installed on compute nodes in a pool.",
+                                                        "type": "object"
+                                                    },
+                                                    "title": "A list of certificates to be installed on each compute node in the pool.",
+                                                    "type": "array"
+                                                },
+                                                "cloudServiceConfiguration": {
+                                                    "description": "This property must be specified if the pool needs to be created with Azure PaaS VMs. This property and virtualMachineConfiguration are mutually exclusive and one of the properties must be specified. If neither is specified then the Batch service returns an error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request). This property cannot be specified if the Batch account was created with its poolAllocationMode property set to 'UserSubscription'.",
+                                                    "title": "The cloud service configuration for the pool.",
+                                                    "properties": {
+                                                        "currentOSVersion": {
+                                                            "description": "This may differ from targetOSVersion if the pool state is Upgrading. In this case some virtual machines may be on the targetOSVersion and some may be on the currentOSVersion during the upgrade process. Once all virtual machines have upgraded, currentOSVersion is updated to be the same as targetOSVersion.",
+                                                            "readOnly": true,
+                                                            "title": "The Azure Guest OS Version currently installed on the virtual machines in the pool.",
+                                                            "type": "string"
+                                                        },
+                                                        "osFamily": {
+                                                            "description": "Possible values are:\n2 - OS Family 2, equivalent to Windows Server 2008 R2 SP1.\n3 - OS Family 3, equivalent to Windows Server 2012.\n4 - OS Family 4, equivalent to Windows Server 2012 R2.\n5 - OS Family 5, equivalent to Windows Server 2016. For more information, see Azure Guest OS Releases (https://azure.microsoft.com/documentation/articles/cloud-services-guestos-update-matrix/#releases).",
+                                                            "title": "The Azure Guest OS family to be installed on the virtual machines in the pool.",
+                                                            "type": "string"
+                                                        },
+                                                        "targetOSVersion": {
+                                                            "description": "The default value is * which specifies the latest operating system version for the specified OS family.",
+                                                            "title": "The Azure Guest OS version to be installed on the virtual machines in the pool.",
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "osFamily"
+                                                    ],
+                                                    "type": "object"
+                                                },
+                                                "displayName": {
+                                                    "description": "The display name need not be unique and can contain any Unicode characters up to a maximum length of 1024.",
+                                                    "title": "The display name for the pool.",
+                                                    "type": "string"
+                                                },
+                                                "enableAutoScale": {
+                                                    "description": "If false, at least one of targetDedicateNodes and targetLowPriorityNodes must be specified. If true, the autoScaleFormula element is required. The pool automatically resizes according to the formula. The default value is false.",
+                                                    "title": "Whether the pool size should automatically adjust over time.",
+                                                    "type": "boolean"
+                                                },
+                                                "enableInterNodeCommunication": {
+                                                    "description": "Enabling inter-node communication limits the maximum size of the pool due to deployment restrictions on the nodes of the pool. This may result in the pool not reaching its desired size. The default value is false.",
+                                                    "title": "Whether the pool permits direct communication between nodes.",
+                                                    "type": "boolean"
+                                                },
+                                                "maxTasksPerNode": {
+                                                    "description": "The default value is 1. The maximum value of this setting depends on the size of the compute nodes in the pool (the vmSize setting).",
+                                                    "format": "int32",
+                                                    "title": "The maximum number of tasks that can run concurrently on a single compute node in the pool.",
+                                                    "type": "integer"
+                                                },
+                                                "metadata": {
+                                                    "description": "The Batch service does not assign any meaning to metadata; it is solely for the use of user code.",
+                                                    "items": {
+                                                        "description": "The Batch service does not assign any meaning to this metadata; it is solely for the use of user code.",
+                                                        "properties": {
+                                                            "name": {
+                                                                "title": "The name of the metadata item.",
+                                                                "type": "string"
+                                                            },
+                                                            "value": {
+                                                                "title": "The value of the metadata item.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "name",
+                                                            "value"
+                                                        ],
+                                                        "title": "A name-value pair associated with a Batch service resource.",
+                                                        "type": "object"
+                                                    },
+                                                    "title": "A list of name-value pairs associated with the pool as metadata.",
+                                                    "type": "array"
+                                                },
+                                                "networkConfiguration": {
+                                                    "title": "The network configuration for the pool.",
+                                                    "description": "The network configuration for a pool.",
+                                                    "properties": {
+                                                        "endpointConfiguration": {
+                                                            "description": "Pool endpoint configuration is only supported on pools with the virtualMachineConfiguration property.",
+                                                            "title": "The configuration for endpoints on compute nodes in the Batch pool.",
+                                                            "properties": {
+                                                                "inboundNATPools": {
+                                                                    "description": "The maximum number of inbound NAT pools per Batch pool is 5. If the maximum number of inbound NAT pools is exceeded the request fails with HTTP status code 400.",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "backendPort": {
+                                                                                "description": "This must be unique within a Batch pool. Acceptable values are between 1 and 65535 except for 22, 3389, 29876 and 29877 as these are reserved. If any reserved values are provided the request fails with HTTP status code 400.",
+                                                                                "format": "int32",
+                                                                                "title": "The port number on the compute node.",
+                                                                                "type": "integer"
+                                                                            },
+                                                                            "frontendPortRangeEnd": {
+                                                                                "description": "Acceptable values range between 1 and 65534 except ports from 50000 to 55000 which are reserved by the Batch service. All ranges within a pool must be distinct and cannot overlap. Each range must contain at least 40 ports. If any reserved or overlapping values are provided the request fails with HTTP status code 400.",
+                                                                                "format": "int32",
+                                                                                "title": "The last port number in the range of external ports that will be used to provide inbound access to the backendPort on individual compute nodes.",
+                                                                                "type": "integer"
+                                                                            },
+                                                                            "frontendPortRangeStart": {
+                                                                                "description": "Acceptable values range between 1 and 65534 except ports from 50000 to 55000 which are reserved. All ranges within a pool must be distinct and cannot overlap. Each range must contain at least 40 ports. If any reserved or overlapping values are provided the request fails with HTTP status code 400.",
+                                                                                "format": "int32",
+                                                                                "title": "The first port number in the range of external ports that will be used to provide inbound access to the backendPort on individual compute nodes.",
+                                                                                "type": "integer"
+                                                                            },
+                                                                            "name": {
+                                                                                "description": "The name must be unique within a Batch pool, can contain letters, numbers, underscores, periods, and hyphens. Names must start with a letter or number, must end with a letter, number, or underscore, and cannot exceed 77 characters.  If any invalid values are provided the request fails with HTTP status code 400.",
+                                                                                "title": "The name of the endpoint.",
+                                                                                "type": "string"
+                                                                            },
+                                                                            "networkSecurityGroupRules": {
+                                                                                "description": "The maximum number of rules that can be specified across all the endpoints on a Batch pool is 25. If no network security group rules are specified, a default rule will be created to allow inbound access to the specified backendPort. If the maximum number of network security group rules is exceeded the request fails with HTTP status code 400.",
+                                                                                "items": {
+                                                                                    "properties": {
+                                                                                        "access": {
+                                                                                            "enum": [
+                                                                                                "allow",
+                                                                                                "deny"
+                                                                                            ],
+                                                                                            "title": "The action that should be taken for a specified IP address, subnet range or tag.",
+                                                                                            "type": "string",
+                                                                                            "x-ms-enum": {
+                                                                                                "modelAsString": false,
+                                                                                                "name": "NetworkSecurityGroupRuleAccess",
+                                                                                                "values": [
+                                                                                                    {
+                                                                                                        "description": "Allow access.",
+                                                                                                        "value": "allow"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "description": "Deny access.",
+                                                                                                        "value": "deny"
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        },
+                                                                                        "priority": {
+                                                                                            "description": "Priorities within a pool must be unique and are evaluated in order of priority. The lower the number the higher the priority. For example, rules could be specified with order numbers of 150, 250, and 350. The rule with the order number of 150 takes precedence over the rule that has an order of 250. Allowed priorities are 150 to 3500. If any reserved or duplicate values are provided the request fails with HTTP status code 400.",
+                                                                                            "format": "int32",
+                                                                                            "title": "The priority for this rule.",
+                                                                                            "type": "integer"
+                                                                                        },
+                                                                                        "sourceAddressPrefix": {
+                                                                                            "description": "Valid values are a single IP address (i.e. 10.10.10.10), IP subnet (i.e. 192.168.1.0/24), default tag, or * (for all addresses).  If any other values are provided the request fails with HTTP status code 400.",
+                                                                                            "title": "The source address prefix or tag to match for the rule.",
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "priority",
+                                                                                        "access",
+                                                                                        "sourceAddressPrefix"
+                                                                                    ],
+                                                                                    "title": "A network security group rule to apply to an inbound endpoint.",
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "title": "A list of network security group rules that will be applied to the endpoint.",
+                                                                                "type": "array"
+                                                                            },
+                                                                            "protocol": {
+                                                                                "title": "The protocol of the endpoint.",
+                                                                                "enum": [
+                                                                                    "tcp",
+                                                                                    "udp"
+                                                                                ],
+                                                                                "type": "string",
+                                                                                "x-ms-enum": {
+                                                                                    "modelAsString": false,
+                                                                                    "name": "InboundEndpointProtocol",
+                                                                                    "values": [
+                                                                                        {
+                                                                                            "description": "Use TCP for the endpoint.",
+                                                                                            "name": "tcp",
+                                                                                            "value": "tcp"
+                                                                                        },
+                                                                                        {
+                                                                                            "description": "Use UDP for the endpoint.",
+                                                                                            "name": "udp",
+                                                                                            "value": "udp"
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "name",
+                                                                            "protocol",
+                                                                            "backendPort",
+                                                                            "frontendPortRangeStart",
+                                                                            "frontendPortRangeEnd"
+                                                                        ],
+                                                                        "title": "A inbound NAT pool that can be used to address specific ports on compute nodes in a Batch pool externally.",
+                                                                        "type": "object"
+                                                                    },
+                                                                    "title": "A list of inbound NAT pools that can be used to address specific ports on an individual compute node externally.",
+                                                                    "type": "array"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "inboundNATPools"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "subnetId": {
+                                                            "description": "The virtual network must be in the same region and subscription as the Azure Batch account. The specified subnet should have enough free IP addresses to accommodate the number of nodes in the pool. If the subnet doesn't have enough free IP addresses, the pool will partially allocate compute nodes, and a resize error will occur. The 'MicrosoftAzureBatch' service principal must have the 'Classic Virtual Machine Contributor' Role-Based Access Control (RBAC) role for the specified VNet. The specified subnet must allow communication from the Azure Batch service to be able to schedule tasks on the compute nodes. This can be verified by checking if the specified VNet has any associated Network Security Groups (NSG). If communication to the compute nodes in the specified subnet is denied by an NSG, then the Batch service will set the state of the compute nodes to unusable. For pools created with virtualMachineConfiguration only ARM virtual networks ('Microsoft.Network/virtualNetworks') are supported, but for pools created with cloudServiceConfiguration both ARM and classic virtual networks are supported. If the specified VNet has any associated Network Security Groups (NSG), then a few reserved system ports must be enabled for inbound communication. For pools created with a virtual machine configuration, enable ports 29876 and 29877, as well as port 22 for Linux and port 3389 for Windows. For pools created with a cloud service configuration, enable ports 10100, 20100, and 30100. Also enable outbound connections to Azure Storage on port 443. For more details see: https://docs.microsoft.com/en-us/azure/batch/batch-api-basics#virtual-network-vnet-and-firewall-configuration",
+                                                            "externalDocs": {
+                                                                "description": "Setting up RBAC for Azure Batch VNETs",
+                                                                "url": "https://azure.microsoft.com/en-us/documentation/articles/role-based-access-built-in-roles/#classic-virtual-machine-contributor"
+                                                            },
+                                                            "title": "The ARM resource identifier of the virtual network subnet which the compute nodes of the pool will join. This is of the form /subscriptions/{subscription}/resourceGroups/{group}/providers/{provider}/virtualNetworks/{network}/subnets/{subnet}.",
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "resizeTimeout": {
+                                                    "description": "This timeout applies only to manual scaling; it has no effect when enableAutoScale is set to true. The default value is 15 minutes. The minimum value is 5 minutes. If you specify a value less than 5 minutes, the Batch service rejects the request with an error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                                                    "format": "duration",
+                                                    "title": "The timeout for allocation of compute nodes to the pool.",
+                                                    "type": "string"
+                                                },
+                                                "startTask": {
+                                                    "title": "A task to run on each compute node as it joins the pool. The task runs when the node is added to the pool or when the node is restarted.",
+                                                    "description": "Batch will retry tasks when a recovery operation is triggered on a compute node. Examples of recovery operations include (but are not limited to) when an unhealthy compute node is rebooted or a compute node disappeared due to host failure. Retries due to recovery operations are independent of and are not counted against the maxTaskRetryCount. Even if the maxTaskRetryCount is 0, an internal retry due to a recovery operation may occur. Because of this, all tasks should be idempotent. This means tasks need to tolerate being interrupted and restarted without causing any corruption or duplicate data. The best practice for long running tasks is to use some form of checkpointing.",
+                                                    "properties": {
+                                                        "commandLine": {
+                                                            "description": "The command line does not run under a shell, and therefore cannot take advantage of shell features such as environment variable expansion. If you want to take advantage of such features, you should invoke the shell in the command line, for example using \"cmd /c MyCommand\" in Windows or \"/bin/sh -c MyCommand\" in Linux. If the command line refers to file paths, it should use a relative path (relative to the task working directory), or use the Batch provided environment variable (https://docs.microsoft.com/en-us/azure/batch/batch-compute-node-environment-variables).",
+                                                            "title": "The command line of the start task.",
+                                                            "type": "string"
+                                                        },
+                                                        "containerSettings": {
+                                                            "description": "When this is specified, all directories recursively below the AZ_BATCH_NODE_ROOT_DIR (the root of Azure Batch directories on the node) are mapped into the container, all task environment variables are mapped into the container, and the task command line is executed in the container.",
+                                                            "title": "The settings for the container under which the start task runs.",
+                                                            "properties": {
+                                                                "containerRunOptions": {
+                                                                    "description": "These additional options are supplied as arguments to the \"docker create\" command, in addition to those controlled by the Batch Service.",
+                                                                    "title": "Additional options to the container create command.",
+                                                                    "type": "string"
+                                                                },
+                                                                "imageName": {
+                                                                    "description": "This is the full image reference, as would be specified to \"docker pull\". If no tag is provided as part of the image name, the tag \":latest\" is used as a default.",
+                                                                    "title": "The image to use to create the container in which the task will run.",
+                                                                    "type": "string"
+                                                                },
+                                                                "registry": {
+                                                                    "description": "This setting can be omitted if was already provided at pool creation.",
+                                                                    "title": "The private registry which contains the container image.",
+                                                                    "properties": {
+                                                                        "password": {
+                                                                            "title": "The password to log into the registry server.",
+                                                                            "type": "string"
+                                                                        },
+                                                                        "registryServer": {
+                                                                            "description": "If omitted, the default is \"docker.io\".",
+                                                                            "title": "The registry URL.",
+                                                                            "type": "string"
+                                                                        },
+                                                                        "username": {
+                                                                            "title": "The user name to log into the registry server.",
+                                                                            "type": "string",
+                                                                            "x-ms-client-name": "userName"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "username",
+                                                                        "password"
+                                                                    ],
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "imageName"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "environmentSettings": {
+                                                            "items": {
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "title": "The name of the environment variable.",
+                                                                        "type": "string"
+                                                                    },
+                                                                    "value": {
+                                                                        "title": "The value of the environment variable.",
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "name"
+                                                                ],
+                                                                "title": "An environment variable to be set on a task process.",
+                                                                "type": "object"
+                                                            },
+                                                            "title": "A list of environment variable settings for the start task.",
+                                                            "type": "array"
+                                                        },
+                                                        "maxTaskRetryCount": {
+                                                            "description": "The Batch service retries a task if its exit code is nonzero. Note that this value specifically controls the number of retries. The Batch service will try the task once, and may then retry up to this limit. For example, if the maximum retry count is 3, Batch tries the task up to 4 times (one initial try and 3 retries). If the maximum retry count is 0, the Batch service does not retry the task. If the maximum retry count is -1, the Batch service retries the task without limit.",
+                                                            "format": "int32",
+                                                            "title": "The maximum number of times the task may be retried.",
+                                                            "type": "integer"
+                                                        },
+                                                        "resourceFiles": {
+                                                            "description": "Files listed under this element are located in the task's working directory.",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "blobSource": {
+                                                                        "description": "This URL must be readable using anonymous access; that is, the Batch service does not present any credentials when downloading the blob. There are two ways to get such a URL for a blob in Azure storage: include a Shared Access Signature (SAS) granting read permissions on the blob, or set the ACL for the blob or its container to allow public access.",
+                                                                        "title": "The URL of the file within Azure Blob Storage.",
+                                                                        "type": "string"
+                                                                    },
+                                                                    "fileMode": {
+                                                                        "description": "This property applies only to files being downloaded to Linux compute nodes. It will be ignored if it is specified for a resourceFile which will be downloaded to a Windows node. If this property is not specified for a Linux node, then a default value of 0770 is applied to the file.",
+                                                                        "title": "The file permission mode attribute in octal format.",
+                                                                        "type": "string"
+                                                                    },
+                                                                    "filePath": {
+                                                                        "title": "The location on the compute node to which to download the file, relative to the task's working directory.",
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "blobSource",
+                                                                    "filePath"
+                                                                ],
+                                                                "title": "A file to be downloaded from Azure blob storage to a compute node.",
+                                                                "type": "object"
+                                                            },
+                                                            "title": "A list of files that the Batch service will download to the compute node before running the command line.  There is a maximum size for the list of resource files. When the max size is exceeded, the request will fail and the response error code will be RequestEntityTooLarge. If this occurs, the collection of ResourceFiles must be reduced in size. This can be achieved using .zip files, Application Packages, or Docker Containers.",
+                                                            "type": "array"
+                                                        },
+                                                        "userIdentity": {
+                                                            "description": "If omitted, the task runs as a non-administrative user unique to the task.",
+                                                            "title": "The user identity under which the start task runs.",
+                                                            "properties": {
+                                                                "autoUser": {
+                                                                    "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                                                    "title": "The auto user under which the task is run.",
+                                                                    "properties": {
+                                                                        "elevationLevel": {
+                                                                            "description": "The default value is nonAdmin.",
+                                                                            "title": "The elevation level of the auto user.",
+                                                                            "enum": [
+                                                                                "nonadmin",
+                                                                                "admin"
+                                                                            ],
+                                                                            "type": "string",
+                                                                            "x-ms-enum": {
+                                                                                "modelAsString": false,
+                                                                                "name": "ElevationLevel",
+                                                                                "values": [
+                                                                                    {
+                                                                                        "description": "The user is a standard user without elevated access.",
+                                                                                        "name": "nonAdmin",
+                                                                                        "value": "nonadmin"
+                                                                                    },
+                                                                                    {
+                                                                                        "description": "The user is a user with elevated access and operates with full Administrator permissions.",
+                                                                                        "value": "admin"
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        },
+                                                                        "scope": {
+                                                                            "description": "The default value is task.",
+                                                                            "enum": [
+                                                                                "task",
+                                                                                "pool"
+                                                                            ],
+                                                                            "title": "The scope for the auto user",
+                                                                            "type": "string",
+                                                                            "x-ms-enum": {
+                                                                                "modelAsString": false,
+                                                                                "name": "AutoUserScope",
+                                                                                "values": [
+                                                                                    {
+                                                                                        "description": "Specifies that the service should create a new user for the task.",
+                                                                                        "value": "task"
+                                                                                    },
+                                                                                    {
+                                                                                        "description": "Specifies that the task runs as the common auto user account which is created on every node in a pool.",
+                                                                                        "value": "pool"
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "username": {
+                                                                    "description": "The userName and autoUser properties are mutually exclusive; you must specify one but not both.",
+                                                                    "title": "The name of the user identity under which the task is run.",
+                                                                    "type": "string",
+                                                                    "x-ms-client-name": "userName"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "waitForSuccess": {
+                                                            "description": "If true and the start task fails on a compute node, the Batch service retries the start task up to its maximum retry count (maxTaskRetryCount). If the task has still not completed successfully after all retries, then the Batch service marks the compute node unusable, and will not schedule tasks to it. This condition can be detected via the node state and failure info details. If false, the Batch service will not wait for the start task to complete. In this case, other tasks can start executing on the compute node while the start task is still running; and even if the start task fails, new tasks will continue to be scheduled on the node. The default is false.",
+                                                            "title": "Whether the Batch service should wait for the start task to complete successfully (that is, to exit with exit code 0) before scheduling any tasks on the compute node.",
+                                                            "type": "boolean"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "commandLine"
+                                                    ],
+                                                    "type": "object"
+                                                },
+                                                "targetDedicatedNodes": {
+                                                    "description": "This property must not be specified if enableAutoScale is set to true. If enableAutoScale is set to false, then you must set either targetDedicatedNodes, targetLowPriorityNodes, or both.",
+                                                    "format": "int32",
+                                                    "title": "The desired number of dedicated compute nodes in the pool.",
+                                                    "type": "integer"
+                                                },
+                                                "targetLowPriorityNodes": {
+                                                    "description": "This property must not be specified if enableAutoScale is set to true. If enableAutoScale is set to false, then you must set either targetDedicatedNodes, targetLowPriorityNodes, or both.",
+                                                    "format": "int32",
+                                                    "title": "The desired number of low-priority compute nodes in the pool.",
+                                                    "type": "integer"
+                                                },
+                                                "taskSchedulingPolicy": {
+                                                    "title": "How tasks are distributed across compute nodes in a pool.",
+                                                    "properties": {
+                                                        "nodeFillType": {
+                                                            "enum": [
+                                                                "spread",
+                                                                "pack"
+                                                            ],
+                                                            "title": "How tasks are distributed across compute nodes in a pool.",
+                                                            "type": "string",
+                                                            "x-ms-enum": {
+                                                                "modelAsString": false,
+                                                                "name": "ComputeNodeFillType",
+                                                                "values": [
+                                                                    {
+                                                                        "description": "Tasks should be assigned evenly across all nodes in the pool.",
+                                                                        "value": "spread"
+                                                                    },
+                                                                    {
+                                                                        "description": "As many tasks as possible (maxTasksPerNode) should be assigned to each node in the pool before any tasks are assigned to the next node in the pool.",
+                                                                        "value": "pack"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "nodeFillType"
+                                                    ],
+                                                    "type": "object"
+                                                },
+                                                "userAccounts": {
+                                                    "items": {
+                                                        "properties": {
+                                                            "elevationLevel": {
+                                                                "description": "The default value is nonAdmin.",
+                                                                "title": "The elevation level of the user account.",
+                                                                "enum": [
+                                                                    "nonadmin",
+                                                                    "admin"
+                                                                ],
+                                                                "type": "string",
+                                                                "x-ms-enum": {
+                                                                    "modelAsString": false,
+                                                                    "name": "ElevationLevel",
+                                                                    "values": [
+                                                                        {
+                                                                            "description": "The user is a standard user without elevated access.",
+                                                                            "name": "nonAdmin",
+                                                                            "value": "nonadmin"
+                                                                        },
+                                                                        {
+                                                                            "description": "The user is a user with elevated access and operates with full Administrator permissions.",
+                                                                            "value": "admin"
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "linuxUserConfiguration": {
+                                                                "description": "This property is ignored if specified on a Windows pool. If not specified, the user is created with the default options.",
+                                                                "title": "The Linux-specific user configuration for the user account.",
+                                                                "properties": {
+                                                                    "gid": {
+                                                                        "description": "The uid and gid properties must be specified together or not at all. If not specified the underlying operating system picks the gid.",
+                                                                        "format": "int32",
+                                                                        "title": "The group ID for the user account.",
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "sshPrivateKey": {
+                                                                        "description": "The private key must not be password protected. The private key is used to automatically configure asymmetric-key based authentication for SSH between nodes in a Linux pool when the pool's enableInterNodeCommunication property is true (it is ignored if enableInterNodeCommunication is false). It does this by placing the key pair into the user's .ssh directory. If not specified, password-less SSH is not configured between nodes (no modification of the user's .ssh directory is done).",
+                                                                        "title": "The SSH private key for the user account.",
+                                                                        "type": "string"
+                                                                    },
+                                                                    "uid": {
+                                                                        "description": "The uid and gid properties must be specified together or not at all. If not specified the underlying operating system picks the uid.",
+                                                                        "format": "int32",
+                                                                        "title": "The user ID of the user account.",
+                                                                        "type": "integer"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "name": {
+                                                                "title": "The name of the user account.",
+                                                                "type": "string"
+                                                            },
+                                                            "password": {
+                                                                "title": "The password for the user account.",
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "name",
+                                                            "password"
+                                                        ],
+                                                        "title": "Properties used to create a user used to execute tasks on an Azure Batch node.",
+                                                        "type": "object"
+                                                    },
+                                                    "title": "The list of user accounts to be created on each node in the pool.",
+                                                    "type": "array"
+                                                },
+                                                "virtualMachineConfiguration": {
+                                                    "description": "This property must be specified if the pool needs to be created with Azure IaaS VMs. This property and cloudServiceConfiguration are mutually exclusive and one of the properties must be specified. If neither is specified then the Batch service returns an error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                                                    "title": "The virtual machine configuration for the pool.",
+                                                    "properties": {
+                                                        "containerConfiguration": {
+                                                            "description": "If specified, setup is performed on each node in the pool to allow tasks to run in containers. All regular tasks and job manager tasks run on this pool must specify the containerSettings property, and all other tasks may specify it.",
+                                                            "title": "The container configuration for the pool.",
+                                                            "properties": {
+                                                                "containerImageNames": {
+                                                                    "description": "This is the full image reference, as would be specified to \"docker pull\". An image will be sourced from the default Docker registry unless the image is fully qualified with an alternative registry.",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "title": "The collection of container image names.",
+                                                                    "type": "array"
+                                                                },
+                                                                "containerRegistries": {
+                                                                    "description": "If any images must be downloaded from a private registry which requires credentials, then those credentials must be provided here.",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "password": {
+                                                                                "title": "The password to log into the registry server.",
+                                                                                "type": "string"
+                                                                            },
+                                                                            "registryServer": {
+                                                                                "description": "If omitted, the default is \"docker.io\".",
+                                                                                "title": "The registry URL.",
+                                                                                "type": "string"
+                                                                            },
+                                                                            "username": {
+                                                                                "title": "The user name to log into the registry server.",
+                                                                                "type": "string",
+                                                                                "x-ms-client-name": "userName"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "username",
+                                                                            "password"
+                                                                        ],
+                                                                        "title": "A private container registry.",
+                                                                        "type": "object"
+                                                                    },
+                                                                    "title": "Additional private registries from which containers can be pulled.",
+                                                                    "type": "array"
+                                                                },
+                                                                "type": {
+                                                                    "enum": [
+                                                                        "dockerCompatible"
+                                                                    ],
+                                                                    "title": "The container technology to be used.",
+                                                                    "type": "string",
+                                                                    "x-ms-enum": {
+                                                                        "modelAsString": false,
+                                                                        "name": "ContainerType",
+                                                                        "values": [
+                                                                            {
+                                                                                "description": "A Docker compatible container technology will be used to launch the containers.",
+                                                                                "value": "dockerCompatible"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "dataDisks": {
+                                                            "description": "This property must be specified if the compute nodes in the pool need to have empty data disks attached to them. This cannot be updated. Each node gets its own disk (the disk is not a file share). Existing disks cannot be attached, each attached disk is empty. When the node is removed from the pool, the disk and all data associated with it is also deleted. The disk is not formatted after being attached, it must be formatted before use - for more information see https://docs.microsoft.com/en-us/azure/virtual-machines/linux/classic/attach-disk#initialize-a-new-data-disk-in-linux and https://docs.microsoft.com/en-us/azure/virtual-machines/windows/attach-disk-ps#add-an-empty-data-disk-to-a-virtual-machine.",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "caching": {
+                                                                        "description": "The default value for caching is readwrite. For information about the caching options see: https://blogs.msdn.microsoft.com/windowsazurestorage/2012/06/27/exploring-windows-azure-drives-disks-and-images/.",
+                                                                        "title": "The type of caching to be enabled for the data disks.",
+                                                                        "enum": [
+                                                                            "none",
+                                                                            "readonly",
+                                                                            "readwrite"
+                                                                        ],
+                                                                        "type": "string",
+                                                                        "x-ms-enum": {
+                                                                            "modelAsString": false,
+                                                                            "name": "CachingType",
+                                                                            "values": [
+                                                                                {
+                                                                                    "description": "The caching mode for the disk is not enabled.",
+                                                                                    "value": "none"
+                                                                                },
+                                                                                {
+                                                                                    "description": "The caching mode for the disk is read only.",
+                                                                                    "name": "readOnly",
+                                                                                    "value": "readonly"
+                                                                                },
+                                                                                {
+                                                                                    "description": "The caching mode for the disk is read and write.",
+                                                                                    "name": "readWrite",
+                                                                                    "value": "readwrite"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "diskSizeGB": {
+                                                                        "format": "int32",
+                                                                        "title": "The initial disk size in gigabytes.",
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "lun": {
+                                                                        "description": "The lun is used to uniquely identify each data disk. If attaching multiple disks, each should have a distinct lun.",
+                                                                        "format": "int32",
+                                                                        "title": "The logical unit number.",
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "storageAccountType": {
+                                                                        "description": "If omitted, the default is \"standard_lrs\".",
+                                                                        "title": "The storage account type to be used for the data disk.",
+                                                                        "enum": [
+                                                                            "standard_lrs",
+                                                                            "premium_lrs"
+                                                                        ],
+                                                                        "type": "string",
+                                                                        "x-ms-enum": {
+                                                                            "modelAsString": false,
+                                                                            "name": "StorageAccountType",
+                                                                            "values": [
+                                                                                {
+                                                                                    "description": "The data disk should use standard locally redundant storage.",
+                                                                                    "name": "StandardLRS",
+                                                                                    "value": "standard_lrs"
+                                                                                },
+                                                                                {
+                                                                                    "description": "The data disk should use premium locally redundant storage.",
+                                                                                    "name": "PremiumLRS",
+                                                                                    "value": "premium_lrs"
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "lun",
+                                                                    "diskSizeGB"
+                                                                ],
+                                                                "title": "Settings which will be used by the data disks associated to compute nodes in the pool.",
+                                                                "type": "object"
+                                                            },
+                                                            "title": "The configuration for data disks attached to the compute nodes in the pool.",
+                                                            "type": "array"
+                                                        },
+                                                        "imageReference": {
+                                                            "title": "A reference to the Azure Virtual Machines Marketplace image or the custom Virtual Machine image to use.",
+                                                            "properties": {
+                                                                "offer": {
+                                                                    "description": "For example, UbuntuServer or WindowsServer.",
+                                                                    "title": "The offer type of the Azure Virtual Machines Marketplace image.",
+                                                                    "type": "string"
+                                                                },
+                                                                "publisher": {
+                                                                    "description": "For example, Canonical or MicrosoftWindowsServer.",
+                                                                    "title": "The publisher of the Azure Virtual Machines Marketplace image.",
+                                                                    "type": "string"
+                                                                },
+                                                                "sku": {
+                                                                    "description": "For example, 14.04.0-LTS or 2012-R2-Datacenter.",
+                                                                    "title": "The SKU of the Azure Virtual Machines Marketplace image.",
+                                                                    "type": "string"
+                                                                },
+                                                                "version": {
+                                                                    "description": "A value of 'latest' can be specified to select the latest version of an image. If omitted, the default is 'latest'.",
+                                                                    "title": "The version of the Azure Virtual Machines Marketplace image.",
+                                                                    "type": "string"
+                                                                },
+                                                                "virtualMachineImageId": {
+                                                                    "description": "This property is mutually exclusive with other ImageReference properties. The virtual machine image must be in the same region and subscription as the Azure Batch account. For information about the firewall settings for the Batch node agent to communicate with the Batch service see https://docs.microsoft.com/en-us/azure/batch/batch-api-basics#virtual-network-vnet-and-firewall-configuration.",
+                                                                    "title": "The ARM resource identifier of the virtual machine image. Computes nodes of the pool will be created using this custom image. This is of the form /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Compute/images/{imageName}",
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "licenseType": {
+                                                            "description": "This only applies to images that contain the Windows operating system, and should only be used when you hold valid on-premises licenses for the nodes which will be deployed. If omitted, no on-premises licensing discount is applied. Values are:\n\n Windows_Server - The on-premises license is for Windows Server.\n Windows_Client - The on-premises license is for Windows Client.\n",
+                                                            "title": "The type of on-premises license to be used when deploying the operating system.",
+                                                            "type": "string"
+                                                        },
+                                                        "nodeAgentSKUId": {
+                                                            "description": "The Batch node agent is a program that runs on each node in the pool, and provides the command-and-control interface between the node and the Batch service. There are different implementations of the node agent, known as SKUs, for different operating systems. You must specify a node agent SKU which matches the selected image reference. To get the list of supported node agent SKUs along with their list of verified image references, see the 'List supported node agent SKUs' operation.",
+                                                            "title": "The SKU of the Batch node agent to be provisioned on compute nodes in the pool.",
+                                                            "type": "string"
+                                                        },
+                                                        "osDisk": {
+                                                            "title": "Settings for the operating system disk of the Virtual Machine.",
+                                                            "properties": {
+                                                                "caching": {
+                                                                    "description": "The default value for caching is readwrite. For information about the caching options see: https://blogs.msdn.microsoft.com/windowsazurestorage/2012/06/27/exploring-windows-azure-drives-disks-and-images/.",
+                                                                    "title": "The type of caching to enable for the OS disk.",
+                                                                    "enum": [
+                                                                        "none",
+                                                                        "readonly",
+                                                                        "readwrite"
+                                                                    ],
+                                                                    "type": "string",
+                                                                    "x-ms-enum": {
+                                                                        "modelAsString": false,
+                                                                        "name": "CachingType",
+                                                                        "values": [
+                                                                            {
+                                                                                "description": "The caching mode for the disk is not enabled.",
+                                                                                "value": "none"
+                                                                            },
+                                                                            {
+                                                                                "description": "The caching mode for the disk is read only.",
+                                                                                "name": "readOnly",
+                                                                                "value": "readonly"
+                                                                            },
+                                                                            {
+                                                                                "description": "The caching mode for the disk is read and write.",
+                                                                                "name": "readWrite",
+                                                                                "value": "readwrite"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "windowsConfiguration": {
+                                                            "description": "This property must not be specified if the imageReference or osDisk property specifies a Linux OS image.",
+                                                            "title": "Windows operating system settings on the virtual machine.",
+                                                            "properties": {
+                                                                "enableAutomaticUpdates": {
+                                                                    "description": "If omitted, the default value is true.",
+                                                                    "title": "Whether automatic updates are enabled on the virtual machine.",
+                                                                    "type": "boolean"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "nodeAgentSKUId",
+                                                        "imageReference"
+                                                    ],
+                                                    "type": "object"
+                                                },
+                                                "vmSize": {
+                                                    "description": "For information about available sizes of virtual machines in pools, see Choose a VM size for compute nodes in an Azure Batch pool (https://docs.microsoft.com/azure/batch/batch-pool-vm-sizes).",
+                                                    "title": "The size of the virtual machines in the pool. All virtual machines in a pool are the same size.",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "vmSize"
+                                            ],
+                                            "type": "object"
+                                        },
+                                        "poolLifetimeOption": {
+                                            "enum": [
+                                                "jobschedule",
+                                                "job"
+                                            ],
+                                            "title": "The minimum lifetime of created auto pools, and how multiple jobs on a schedule are assigned to pools.",
+                                            "type": "string",
+                                            "x-ms-enum": {
+                                                "modelAsString": false,
+                                                "name": "PoolLifetimeOption",
+                                                "values": [
+                                                    {
+                                                        "description": "The pool exists for the lifetime of the job schedule. The Batch Service creates the pool when it creates the first job on the schedule. You may apply this option only to job schedules, not to jobs.",
+                                                        "name": "jobSchedule",
+                                                        "value": "jobschedule"
+                                                    },
+                                                    {
+                                                        "description": "The pool exists for the lifetime of the job to which it is dedicated. The Batch service creates the pool when it creates the job. If the 'job' option is applied to a job schedule, the Batch service creates a new auto pool for every job created on the schedule.",
+                                                        "value": "job"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "poolLifetimeOption"
+                                    ],
+                                    "type": "object"
+                                },
+                                "poolId": {
+                                    "description": "You must ensure that the pool referenced by this property exists. If the pool does not exist at the time the Batch service tries to schedule a job, no tasks for the job will run until you create a pool with that id. Note that the Batch service will not reject the job request; it will simply not run tasks until the pool exists. You must specify either the pool ID or the auto pool specification, but not both.",
+                                    "title": "The ID of an existing pool. All the tasks of the job will run on the specified pool.",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "priority": {
+                            "description": "Priority values can range from -1000 to 1000, with -1000 being the lowest priority and 1000 being the highest priority. The default value is 0. This priority is used as the default for all jobs under the job schedule. You can update a job's priority after it has been created using by using the update job API.",
+                            "format": "int32",
+                            "title": "The priority of jobs created under this schedule.",
+                            "type": "integer"
+                        },
+                        "usesTaskDependencies": {
+                            "title": "Whether tasks in the job can define dependencies on each other. The default is false.",
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "poolInfo"
+                    ],
+                    "type": "object"
+                },
+                "metadata": {
+                    "description": "The Batch service does not assign any meaning to metadata; it is solely for the use of user code.",
+                    "items": {
+                        "description": "The Batch service does not assign any meaning to this metadata; it is solely for the use of user code.",
+                        "properties": {
+                            "name": {
+                                "title": "The name of the metadata item.",
+                                "type": "string"
+                            },
+                            "value": {
+                                "title": "The value of the metadata item.",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "value"
+                        ],
+                        "title": "A name-value pair associated with a Batch service resource.",
+                        "type": "object"
+                    },
+                    "title": "A list of name-value pairs associated with the schedule as metadata.",
+                    "type": "array"
+                },
+                "schedule": {
+                    "title": "The schedule according to which jobs will be created.",
+                    "properties": {
+                        "doNotRunAfter": {
+                            "description": "If you do not specify a doNotRunAfter time, and you are creating a recurring job schedule, the job schedule will remain active until you explicitly terminate it.",
+                            "format": "date-time",
+                            "title": "A time after which no job will be created under this job schedule. The schedule will move to the completed state as soon as this deadline is past and there is no active job under this job schedule.",
+                            "type": "string"
+                        },
+                        "doNotRunUntil": {
+                            "description": "If you do not specify a doNotRunUntil time, the schedule becomes ready to create jobs immediately.",
+                            "format": "date-time",
+                            "title": "The earliest time at which any job may be created under this job schedule.",
+                            "type": "string"
+                        },
+                        "recurrenceInterval": {
+                            "description": "Because a job schedule can have at most one active job under it at any given time, if it is time to create a new job under a job schedule, but the previous job is still running, the Batch service will not create the new job until the previous job finishes. If the previous job does not finish within the startWindow period of the new recurrenceInterval, then no new job will be scheduled for that interval. For recurring jobs, you should normally specify a jobManagerTask in the jobSpecification. If you do not use jobManagerTask, you will need an external process to monitor when jobs are created, add tasks to the jobs and terminate the jobs ready for the next recurrence. The default is that the schedule does not recur: one job is created, within the startWindow after the doNotRunUntil time, and the schedule is complete as soon as that job finishes. The minimum value is 1 minute. If you specify a lower value, the Batch service rejects the schedule with an error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                            "format": "duration",
+                            "title": "The time interval between the start times of two successive jobs under the job schedule. A job schedule can have at most one active job under it at any given time.",
+                            "type": "string"
+                        },
+                        "startWindow": {
+                            "description": "If a job is not created within the startWindow interval, then the 'opportunity' is lost; no job will be created until the next recurrence of the schedule. If the schedule is recurring, and the startWindow is longer than the recurrence interval, then this is equivalent to an infinite startWindow, because the job that is 'due' in one recurrenceInterval is not carried forward into the next recurrence interval. The default is infinite. The minimum value is 1 minute. If you specify a lower value, the Batch service rejects the schedule with an error; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                            "format": "duration",
+                            "title": "The time interval, starting from the time at which the schedule indicates a job should be created, within which a job must be created.",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "required": [
+                "id",
+                "schedule",
+                "jobSpecification"
+            ],
+            "title": "A job schedule that allows recurring jobs by specifying when to run jobs and a specification used to create each job.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

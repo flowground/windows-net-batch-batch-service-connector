@@ -1,0 +1,72 @@
+{
+    "type": "object",
+    "properties": {
+        "poolId": {
+            "required": true,
+            "type": "string"
+        },
+        "nodeId": {
+            "required": true,
+            "type": "string"
+        },
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "expiryTime": {
+                    "description": "If omitted, the default is 1 day from the current time. For Linux compute nodes, the expiryTime has a precision up to a day.",
+                    "format": "date-time",
+                    "title": "The time at which the account should expire.",
+                    "type": "string"
+                },
+                "isAdmin": {
+                    "description": "The default value is false.",
+                    "title": "Whether the account should be an administrator on the compute node.",
+                    "type": "boolean"
+                },
+                "name": {
+                    "title": "The user name of the account.",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "The password is required for Windows nodes (those created with 'cloudServiceConfiguration', or created with 'virtualMachineConfiguration' using a Windows image reference). For Linux compute nodes, the password can optionally be specified along with the sshPublicKey property.",
+                    "title": "The password of the account.",
+                    "type": "string"
+                },
+                "sshPublicKey": {
+                    "description": "The public key should be compatible with OpenSSH encoding and should be base 64 encoded. This property can be specified only for Linux nodes. If this is specified for a Windows node, then the Batch service rejects the request; if you are calling the REST API directly, the HTTP status code is 400 (Bad Request).",
+                    "title": "The SSH public key that can be used for remote login to the compute node.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "title": "A user account for RDP or SSH access on a compute node.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}

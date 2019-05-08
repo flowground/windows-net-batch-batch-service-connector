@@ -1,0 +1,79 @@
+{
+    "type": "object",
+    "properties": {
+        "poolId": {
+            "required": true,
+            "type": "string"
+        },
+        "nodeId": {
+            "required": true,
+            "type": "string"
+        },
+        "timeout": {
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 30
+        },
+        "requestBody": {
+            "properties": {
+                "nodeRebootOption": {
+                    "description": "The default value is requeue.",
+                    "enum": [
+                        "requeue",
+                        "terminate",
+                        "taskcompletion",
+                        "retaineddata"
+                    ],
+                    "title": "When to reboot the compute node and what to do with currently running tasks.",
+                    "type": "string",
+                    "x-ms-enum": {
+                        "modelAsString": false,
+                        "name": "ComputeNodeRebootOption",
+                        "values": [
+                            {
+                                "description": "Terminate running task processes and requeue the tasks. The tasks will run again when a node is available. Restart the node as soon as tasks have been terminated.",
+                                "value": "requeue"
+                            },
+                            {
+                                "description": "Terminate running tasks. The tasks will be completed with failureInfo indicating that they were terminated, and will not run again. Restart the node as soon as tasks have been terminated.",
+                                "value": "terminate"
+                            },
+                            {
+                                "description": "Allow currently running tasks to complete. Schedule no new tasks while waiting. Restart the node when all tasks have completed.",
+                                "name": "taskCompletion",
+                                "value": "taskcompletion"
+                            },
+                            {
+                                "description": "Allow currently running tasks to complete, then wait for all task data retention periods to expire. Schedule no new tasks while waiting. Restart the node when all task retention periods have expired.",
+                                "name": "retainedData",
+                                "value": "retaineddata"
+                            }
+                        ]
+                    }
+                }
+            },
+            "title": "Options for rebooting a compute node.",
+            "type": "object"
+        },
+        "client_request_id": {
+            "required": false,
+            "type": "string",
+            "format": "uuid"
+        },
+        "return_client_request_id": {
+            "required": false,
+            "type": "boolean",
+            "default": false
+        },
+        "ocp_date": {
+            "required": false,
+            "type": "string",
+            "format": "date-time-rfc1123"
+        },
+        "api_version": {
+            "required": true,
+            "type": "string"
+        }
+    }
+}
